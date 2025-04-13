@@ -248,25 +248,19 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }
 
-// --- Article Resolver Definitions ---
-
-// ArticleResolver defines the methods for resolving Article fields.
-// We define this locally as gqlgen is not generating it in generated.go.
-type ArticleResolver interface {
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+/*
+	type ArticleResolver interface {
 	Comments(ctx context.Context, obj *gqlmodel.Article) ([]*gqlmodel.Comment, error)
 	// Author(ctx context.Context, obj *gqlmodel.Article) (*gqlmodel.Author, error) // 必要に応じて Author リゾルバを追加
 }
-
-// articleResolver implements the ArticleResolver interface.
 type articleResolver struct{ *Resolver }
-
-// Article returns the concrete articleResolver implementation satisfying the ArticleResolver interface.
-// Note: We return the interface type ArticleResolver, not generated.ArticleResolver.
 func (r *Resolver) Article() ArticleResolver { return &articleResolver{r} }
-
-// --- Article Field Resolvers ---
-
-// Comments is the resolver for the comments field.
 func (r *articleResolver) Comments(ctx context.Context, obj *gqlmodel.Article) ([]*gqlmodel.Comment, error) {
 	log.Printf("Fetching comments for article ID: %s", obj.ID)
 	var domainComments []*domainmodel.Comment
@@ -321,10 +315,4 @@ func (r *articleResolver) Comments(ctx context.Context, obj *gqlmodel.Article) (
 	log.Printf("Finished mapping %d comments for article ID: %s", len(gqlComments), obj.ID)
 	return gqlComments, nil
 }
-
-// TODO: Implement Author resolver if needed
-// func (r *articleResolver) Author(ctx context.Context, obj *gqlmodel.Article) (*gqlmodel.Author, error) {
-//	 panic(fmt.Errorf("not implemented: Author"))
-// }
-
-// --- ここにあった articleResolver の型定義と Article() メソッド、古いコメントは削除 ---
+*/

@@ -14,6 +14,7 @@ import { getClient } from "@/lib/apollo-client";
 import { GET_ARTICLE } from "@/lib/graphql/queries";
 import { markdownToHtml } from "@/lib/markdown";
 import { notFound } from "next/navigation";
+import { format, isValid } from 'date-fns';
 
 const relatedArticles = [
   {
@@ -53,6 +54,26 @@ const relatedArticles = [
     comments: 21,
   },
 ];
+
+// --- Helper function for date formatting ---
+function formatDate(dateString: string | null | undefined): string {
+  if (!dateString) {
+    return "-";
+  }
+  try {
+    const isoString = dateString.replace(' ', 'T').replace(/ (\+\d{4}).*$/, '$1');
+    const date = new Date(isoString);
+    if (isValid(date)) {
+      return format(date, 'yyyy/MM/dd');
+    } else {
+      console.warn("Could not parse date with new Date(), original:", dateString, "modified:", isoString);
+      return "日付無効";
+    }
+  } catch (e) {
+    console.error("Error formatting date:", dateString, e);
+    return "日付エラー";
+  }
+}
 
 // 記事データを取得する関数
 async function getArticleData(id: string) {
@@ -146,7 +167,7 @@ export default async function ArticlePage({
                 <div className="flex items-center">
                   <Calendar className="w-4 h-4 mr-1 text-slate-500" />
                   <span className="text-sm text-slate-600">
-                    {article.publishedAt}
+                    {formatDate(article.publishedAt)}
                   </span>
                 </div>
                 <div className="flex items-center">

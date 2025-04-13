@@ -33,7 +33,15 @@ export const GET_ARTICLE = gql`
       }
       tags
       likes
-      comments
+      comments {
+        id
+        content
+        createdAt
+        author {
+          name
+          avatar
+        }
+      }
       readingTime
     }
   }

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { getClient } from "@/lib/apollo-client";
 import { GET_ARTICLES_BY_TAG } from "@/lib/graphql/queries";
+import { format, isValid } from 'date-fns';
 
 // ダミーデータ - 記事
 const articles = [
@@ -78,6 +79,26 @@ const relatedTags = [
   { name: "Web開発", count: 198 },
   { name: "Next.js", count: 285 },
 ];
+
+// --- Helper function for date formatting ---
+function formatDate(dateString: string | null | undefined): string {
+  if (!dateString) {
+    return "-";
+  }
+  try {
+    const isoString = dateString.replace(' ', 'T').replace(/ (\+\\d{4}).*$/, '$1');
+    const date = new Date(isoString);
+    if (isValid(date)) {
+      return format(date, 'yyyy/MM/dd');
+    } else {
+      console.warn("Could not parse date with new Date(), original:", dateString, "modified:", isoString);
+      return "日付無効";
+    }
+  } catch (e) {
+    console.error("Error formatting date:", dateString, e);
+    return "日付エラー";
+  }
+}
 
 export default async function TagPage({ params }: { params: { tag: string } }) {
   const decodedTag = decodeURIComponent(params.tag);
@@ -244,7 +265,7 @@ export default async function TagPage({ params }: { params: { tag: string } }) {
                           </div>
                           <div className="flex items-center">
                             <Clock className="w-4 h-4 mr-1" />
-                            {article.publishedAt}
+                            <span>{formatDate(article.publishedAt)}</span>
                           </div>
                         </div>
                       </div>

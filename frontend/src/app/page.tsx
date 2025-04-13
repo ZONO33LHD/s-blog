@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BookOpen, Clock, Tag, TrendingUp } from "lucide-react";
 import { getClient } from "@/lib/apollo-client";
 import { GET_ARTICLES, GET_TRENDING_ARTICLES } from "@/lib/graphql/queries";
+import { format, isValid } from 'date-fns';
 
 // サーバーコンポーネントでデータを取得する関数
 async function getArticles() {
@@ -29,65 +30,33 @@ async function getTrendingArticles() {
   }
 }
 
+// --- Helper function for date formatting (Copied from articles/page.tsx) ---
+function formatDate(dateString: string | null | undefined): string {
+  if (!dateString) {
+    return "-";
+  }
+  try {
+    const isoString = dateString.replace(' ', 'T').replace(/ (\+\d{4}).*$/, '$1');
+    const date = new Date(isoString);
+    if (isValid(date)) {
+      return format(date, 'yyyy/MM/dd');
+    } else {
+      console.warn("Could not parse date with new Date(), original:", dateString, "modified:", isoString);
+      return "日付無効";
+    }
+  } catch (e) {
+    console.error("Error formatting date:", dateString, e);
+    return "日付エラー";
+  }
+}
+
 export default async function Home() {
   // データを取得
   const articles = await getArticles();
   const trendingArticles = await getTrendingArticles();
 
-  // データが取得できなかった場合はダミーデータを表示
-  const fallbackArticles = [
-    {
-      id: "1",
-      title: "Next.js 14で実装するモダンなブログアプリケーション",
-      excerpt:
-        "Next.js 14の新機能を活用して、高速で使いやすいブログアプリケーションを構築する方法を解説します。App Routerの活用方法からサーバーコンポーネントの実装まで、実践的なテクニックを紹介します。",
-      publishedAt: "2023-12-01",
-      author: {
-        name: "山田太郎",
-        avatar: "/placeholder-avatar.png",
-      },
-      tags: [{ name: "Next.js" }, { name: "React" }, { name: "TypeScript" }],
-    },
-  ];
-
-  // 取得したデータまたはダミーデータを使用
-  const displayArticles = articles.length > 0 ? articles : fallbackArticles;
-  const displayTrendingArticles =
-    trendingArticles.length > 0
-      ? trendingArticles
-      : fallbackArticles.slice(0, 3);
-
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* ヘッダー */}
-      <header className="sticky top-0 z-10 bg-white border-b border-slate-200">
-        <div className="container flex items-center justify-between h-16 px-4 mx-auto">
-          <Link href="/" className="text-xl font-bold">
-            S-Blog
-          </Link>
-          <nav className="flex items-center space-x-4">
-            <Link
-              href="/articles"
-              className="text-slate-600 hover:text-slate-900"
-            >
-              記事一覧
-            </Link>
-            <Link href="/tags" className="text-slate-600 hover:text-slate-900">
-              タグ
-            </Link>
-            <Link href="/about" className="text-slate-600 hover:text-slate-900">
-              About
-            </Link>
-            <Link
-              href="/login"
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
-              ログイン
-            </Link>
-          </nav>
-        </div>
-      </header>
-
       <main>
         {/* ヒーローセクション */}
         <section className="py-16 bg-white">
@@ -125,7 +94,7 @@ export default async function Home() {
               </h2>
             </div>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {displayTrendingArticles.slice(0, 3).map((article) => (
+              {trendingArticles.slice(0, 3).map((article) => (
                 <div
                   key={article.id}
                   className="overflow-hidden transition-shadow border border-slate-200 rounded-lg hover:shadow-md"
@@ -150,7 +119,7 @@ export default async function Home() {
                       </div>
                       <div className="flex items-center text-sm text-slate-500">
                         <Clock className="w-4 h-4 mr-1" />
-                        {article.publishedAt}
+                        {formatDate(article.publishedAt)}
                       </div>
                     </div>
                   </Link>
@@ -168,7 +137,7 @@ export default async function Home() {
               <h2 className="text-2xl font-bold text-slate-900">最新記事</h2>
             </div>
             <div className="space-y-6">
-              {displayArticles.map((article) => (
+              {articles.map((article) => (
                 <div
                   key={article.id}
                   className="p-6 transition-shadow bg-white border border-slate-200 rounded-lg hover:shadow-md"
@@ -208,7 +177,7 @@ export default async function Home() {
                       </div>
                       <div className="flex items-center text-sm text-slate-500">
                         <Clock className="w-4 h-4 mr-1" />
-                        {article.publishedAt}
+                        {formatDate(article.publishedAt)}
                       </div>
                     </div>
                   </Link>
