@@ -58,32 +58,6 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-slate-50">
       <main>
-        {/* ヒーローセクション */}
-        <section className="py-16 bg-white">
-          <div className="container px-4 mx-auto text-center">
-            <h1 className="text-4xl font-bold text-slate-900 md:text-5xl">
-              技術と知識を共有するプラットフォーム
-            </h1>
-            <p className="max-w-2xl mx-auto mt-6 text-xl text-slate-600">
-              最新のWeb開発、プログラミング、デザインに関する知見を共有し、学び合うコミュニティへようこそ
-            </p>
-            <div className="flex justify-center mt-10 space-x-4">
-              <Link
-                href="/register"
-                className="px-6 py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-              >
-                アカウント登録
-              </Link>
-              <Link
-                href="/articles"
-                className="px-6 py-3 text-blue-600 bg-white border border-blue-600 rounded-md hover:bg-blue-50"
-              >
-                記事を読む
-              </Link>
-            </div>
-          </div>
-        </section>
-
         {/* トレンド記事 */}
         <section className="py-12 bg-white">
           <div className="container px-4 mx-auto">
