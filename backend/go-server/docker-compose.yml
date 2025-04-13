@@ -1,25 +1,56 @@
-version: '3.8'
+version: '3'
 
 services:
-  db:
-    image: postgres:16
-    container_name: s-blog-db
-    env_file:
-      - .env
-    environment:
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
+  postgres:
+    image: postgres:14-alpine
+    container_name: sblog-postgres
     ports:
-      - "${DATABASE_PORT}:5432"
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sblog_dev
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - postgres-network
+    restart: always
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile-migrate
+    container_name: sblog-migrate
+    depends_on:
+      - postgres
+    environment:
+      - APP_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=sblog_dev
+    volumes:
+      - .:/app
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile-protogen
+    container_name: sblog-api
+    depends_on:
+      - postgres
+      - migrate
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5435
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=sblog_dev
+    volumes:
+      - .:/app
+    restart: always
 
 volumes:
   postgres_data:
-
-networks:
-  postgres-network:
-    driver: bridge

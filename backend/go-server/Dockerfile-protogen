@@ -23,11 +23,7 @@ RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v${PROTOC_GEN_GO_VER
     go install github.com/twitchtv/twirp/protoc-gen-twirp@v${PROTOC_GEN_TWIRP} && \
     go install github.com/envoyproxy/protoc-gen-validate@v${PROTOC_GEN_VALIDATE}
 
-# protoc-gen-doc for API documentation
-RUN mkdir -p ${GOPATH}/src/github.com/pseudomuto/protoc-gen-doc && \
-    curl -L https://github.com/pseudomuto/protoc-gen-doc/archive/v${PROTOC_GEN_DOC_VERSION}.tar.gz | tar xvz --strip 1 -C ${GOPATH}/src/github.com/pseudomuto/protoc-gen-doc
-RUN cd ${GOPATH}/src/github.com/pseudomuto/protoc-gen-doc && \
-    make build && \
-    install -c ${GOPATH}/src/github.com/pseudomuto/protoc-gen-doc/protoc-gen-doc /go/bin/
+# protoc-gen-doc for API documentation - Goモジュールを使って直接インストール
+RUN go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@v${PROTOC_GEN_DOC_VERSION}
 
 ENTRYPOINT ["protoc", "--plugin=/go/bin/protoc-gen-go", "--plugin=/go/bin/protoc-gen-twirp", "--plugin=/go/bin/protoc-gen-validate", "--plugin=/go/bin/protoc-gen-doc"]
