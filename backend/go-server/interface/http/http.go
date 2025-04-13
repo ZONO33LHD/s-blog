@@ -27,3 +27,15 @@ func writeWarning(ctx context.Context, w http.ResponseWriter, message string, er
 	}
 	_, _ = fmt.Fprint(w, message)
 }
+
+func writeSuccess(ctx context.Context, w http.ResponseWriter, message string) {
+	log.MustFromContext(ctx).Info(ctx, message)
+	w.WriteHeader(http.StatusOK)
+	_, _ = fmt.Fprint(w, message)
+}
+
+func writeGraphQL(ctx context.Context, w http.ResponseWriter, message string) {
+	w.WriteHeader(http.StatusOK)
+	_, _ = fmt.Fprint(w, message)
+}
+

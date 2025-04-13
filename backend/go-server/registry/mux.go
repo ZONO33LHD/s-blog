@@ -14,6 +14,7 @@ func newMux(
 ) *stdhttp.ServeMux {
 	mux := stdhttp.NewServeMux()
 	mux.HandleFunc("/health", http.NewHealthCheckHandler(db).HealthCheck)
+	mux.HandleFunc("/graphql", http.NewGraphQLHandler(db).GraphQL)
 
 	return mux
 }

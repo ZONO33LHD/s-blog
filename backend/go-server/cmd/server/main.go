@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 
 	"github.com/s-blog/backend/go-server/domain/config"
 	infralog "github.com/s-blog/backend/go-server/infrastructure/log"
@@ -38,10 +39,20 @@ func main() {
 	rootMux := http.NewServeMux()
 	rootMux.Handle("/", withLoggerHandler(muxServer.Mux))
 
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:8080"},
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodOptions},
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+		Debug:            true,
+	})
+
+	httpHandler := c.Handler(rootMux)
+
 	logger.Info(ctx, fmt.Sprintf("Starting a server on port %d with %s", cfg.Port, runtime.Version()))
 	httpServer := &http.Server{
 		Addr:              fmt.Sprintf(":%d", cfg.Port),
-		Handler:           rootMux,
+		Handler:           httpHandler,
 		ReadHeaderTimeout: 30 * time.Second,
 	}
 	if err := httpServer.ListenAndServe(); err != nil {

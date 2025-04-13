@@ -1,0 +1,36 @@
+type Article {
+  id: ID!
+  title: String!
+  content: String!
+  excerpt: String!
+  publishedAt: String!
+  author: Author!
+  tags: [String!]!
+  likes: Int!
+  comments: [Comment!]!
+  readingTime: String
+}
+
+type Author {
+  name: String!
+  avatar: String!
+  bio: String
+}
+
+type Tag {
+  name: String!
+}
+
+type Comment {
+  id: ID!
+  content: String!
+  createdAt: String!
+  author: Author!
+}
+
+type Query {
+  articles: [Article!]!
+  articlesByTag(tag: String!): [Article!]!
+  trendingArticles: [Article!]!
+  article(id: ID!): Article
+}
