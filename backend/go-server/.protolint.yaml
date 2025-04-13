@@ -1,0 +1,9 @@
+# Lint directives.
+lint:
+  rules_option:
+    indent:
+      not_insert_newline: true
+    # MAX_LINE_LENGTH rule option.
+    max_line_length:
+      # Enforces a maximum line length
+      max_chars: 140

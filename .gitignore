@@ -1,0 +1,13 @@
+**/*.mdc
+.env
+**/node_modules
+.next
+**/*.next
+**/.next/cache
+**/.next/cache/**
+**/*.pack.gz
+**/*.pack.gz.old
+.DS_Store
+
+server.log
+server.exe
